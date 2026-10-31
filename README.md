@@ -14,4 +14,8 @@ Includes an animated introduction, a monochrome dotted background, an 80-hour wo
 
 Serve `dist/` with any static HTTP server, or open `dist/index.html` directly.
 
+## Vercel
+
+Import this repository with its root directory unchanged. `vercel.json` selects the static `dist/` output without a build command. Vercel must serve `dist/index.html` as the site's home page.
+
 The administrator-login project image is a static preview rendered from the application's markup and styles. The attendance application's source, backend, database, and credentials are not included.
