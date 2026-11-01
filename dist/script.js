@@ -103,3 +103,38 @@ window.addEventListener('scroll', queueExperience, { passive: true });
 window.addEventListener('resize', queueExperience);
 experienceMotion.addEventListener('change', configureExperience);
 configureExperience();
+
+const projectTrack = document.getElementById('project-track');
+const projectCards = Array.from(projectTrack.querySelectorAll('.featured-project'));
+const previousProject = document.getElementById('previous-project');
+const nextProject = document.getElementById('next-project');
+const projectCounter = document.querySelector('.project-counter');
+let activeProject = 0;
+let projectScrollTimer;
+const syncProjects = () => {
+  activeProject = projectCards.reduce((nearest, card, index) =>
+    Math.abs(card.offsetLeft - projectTrack.scrollLeft) < Math.abs(projectCards[nearest].offsetLeft - projectTrack.scrollLeft) ? index : nearest, 0);
+  previousProject.disabled = activeProject === 0;
+  nextProject.disabled = activeProject === projectCards.length - 1;
+  projectCounter.textContent = `${String(activeProject + 1).padStart(2, '0')} / ${String(projectCards.length).padStart(2, '0')}`;
+};
+const showProject = (direction) => {
+  syncProjects();
+  const index = Math.max(0, Math.min(projectCards.length - 1, activeProject + direction));
+  projectTrack.scrollTo({ left: projectCards[index].offsetLeft, behavior: motionPreference.matches ? 'auto' : 'smooth' });
+};
+previousProject.hidden = nextProject.hidden = projectCards.length < 2;
+previousProject.addEventListener('click', () => showProject(-1));
+nextProject.addEventListener('click', () => showProject(1));
+projectTrack.addEventListener('scroll', () => {
+  clearTimeout(projectScrollTimer);
+  projectScrollTimer = setTimeout(syncProjects, 120);
+}, { passive: true });
+projectTrack.addEventListener('keydown', (event) => {
+  if (event.target === projectTrack && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+    event.preventDefault();
+    showProject(event.key === 'ArrowRight' ? 1 : -1);
+  }
+});
+window.addEventListener('resize', syncProjects);
+syncProjects();
